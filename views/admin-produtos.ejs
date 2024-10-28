@@ -1,0 +1,177 @@
+<!-- admin-produtos.ejs -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Produtos - Leila Bolos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        .modal {
+            width: 60%; /* Largura do modal */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="/" class="brand-logo">Leila Bolos</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="/cardapio">Cardápio</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="center-align">Admin Produtos</h1>
+
+            <h2>Produtos Existentes</h2>
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                        <th>Imagem</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% produtos.forEach(produto => { %>
+                    <tr>
+                        <td><%= produto.id %></td>
+                        <td><%= produto.nome %></td>
+                        <td><%= produto.descricao %></td>
+                        <td>R$ <%= produto.preco.toFixed(2) %></td>
+                        <td><img src="<%= produto.imagem %>" alt="<%= produto.nome %>" height="50"></td>
+                        <td>
+                            <a href="#editarModal<%= produto.id %>" class="btn btn-small blue modal-trigger">Editar</a>
+                            <a href="/admin-produtos/remover/<%= produto.id %>" class="btn btn-small red"
+                                onclick="return confirm('Tem certeza que deseja remover este produto?');">Remover</a>
+                        </td>
+                    </tr>
+
+                    <!-- Modal de Edição -->
+                    <div id="editarModal<%= produto.id %>" class="modal">
+                        <div class="modal-content">
+                            <h4>Editar Produto</h4>
+                            <form action="/admin-produtos/editar/<%= produto.id %>" method="post">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input type="text" id="nome<%= produto.id %>" name="nome" value="<%= produto.nome %>" required>
+                                        <label for="nome<%= produto.id %>">Nome:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <textarea id="descricao<%= produto.id %>" name="descricao" class="materialize-textarea"
+                                            required><%= produto.descricao %></textarea>
+                                        <label for="descricao<%= produto.id %>">Descrição:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input type="number" id="preco<%= produto.id %>" name="preco" step="0.01" value="<%= produto.preco %>"
+                                            required>
+                                        <label for="preco<%= produto.id %>">Preço:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input type="text" id="imagem<%= produto.id %>" name="imagem" value="<%= produto.imagem %>"
+                                            required>
+                                        <label for="imagem<%= produto.id %>">URL da Imagem:</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn waves-effect waves-light">Salvar Alterações</button>
+                                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <% }); %>
+                </tbody>
+            </table>
+
+            <!-- Botão para abrir o modal de adição de produto -->
+            <a href="#adicionarModal" class="btn green modal-trigger">Adicionar Produto</a>
+
+            <!-- Modal de Adição -->
+            <div id="adicionarModal" class="modal">
+                <div class="modal-content">
+                    <h4>Adicionar Produto</h4>
+                    <form action="/admin-produtos/adicionar" method="post">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="text" id="nome" name="nome" required>
+                                <label for="nome">Nome:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="descricao" name="descricao" class="materialize-textarea" required></textarea>
+                                <label for="descricao">Descrição:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="number" id="preco" name="preco" step="0.01" required>
+                                <label for="preco">Preço:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="text" id="imagem" name="imagem" required>
+                                <label for="imagem">URL da Imagem:</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn waves-effect waves-light">Adicionar Produto</button>
+                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Leila Bolos</h5>
+                    <p class="grey-text text-lighten-4">Os melhores bolos da região!</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2023 Copyright
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+        });
+    </script>
+</body>
+</html>

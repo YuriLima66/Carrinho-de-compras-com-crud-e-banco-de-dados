@@ -1,0 +1,21 @@
+/* Estilos para o cardápio */
+.cardapio-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .cardapio-item img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .preco {
+    font-weight: bold;
+  }
+  
+  .modal-img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }

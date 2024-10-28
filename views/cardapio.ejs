@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardapio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        // Função para adicionar um item ao carrinho (usando localStorage)
+        function addToCart(productId, productName, productPrice) {
+            // Obtém o carrinho atual do localStorage ou cria um novo se não existir
+            let cart = JSON.parse(localStorage.getItem('cart')) || []; 
+
+            // Verifica se o produto já existe no carrinho
+            let existingProduct = cart.find(item => item.id === productId);
+
+            if (existingProduct) {
+                // Se o produto já existe, incrementa a quantidade
+                existingProduct.quantity++;
+            } else {
+                // Se o produto não existe, adiciona um novo item ao carrinho
+                cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
+            }
+
+            // Atualiza o carrinho no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart)); 
+
+            // Atualiza o contador do carrinho na página
+            updateCartCount(); 
+
+            // Exibe uma mensagem de sucesso usando o Materialize toast
+            M.toast({ html: 'Produto adicionado ao carrinho!' }); 
+        }
+
+        // Função para atualizar o contador do carrinho e o modal do carrinho
+        function updateCartCount() {
+            // Obtém o carrinho atual do localStorage ou cria um novo se não existir
+            let cart = JSON.parse(localStorage.getItem('cart')) || []; 
+
+            // Calcula a quantidade total de itens no carrinho
+            let cartCount = cart.reduce((total, item) => total + item.quantity, 0); 
+
+            // Atualiza o contador do carrinho no elemento com o ID 'cart-count'
+            document.getElementById('cart-count').textContent = cartCount; 
+
+            // Atualiza o conteúdo do modal do carrinho
+            updateCartModal(cart); 
+        }
+
+        // Função para atualizar o conteúdo do modal do carrinho
+        function updateCartModal(cart) {
+            // Obtém a lista de itens do carrinho no modal
+            let cartItemsList = document.getElementById('cart-items'); 
+
+            // Limpa a lista de itens do carrinho
+            cartItemsList.innerHTML = ''; 
+
+            // Inicializa o total do carrinho
+            let cartTotal = 0; 
+
+            // Itera sobre os itens do carrinho
+            cart.forEach(item => {
+                // Cria um novo elemento de lista (li) para cada item do carrinho
+                let listItem = document.createElement('li'); 
+
+                // Define o conteúdo HTML do item da lista (nome, preço, quantidade e botão remover)
+                listItem.innerHTML = `${item.name} - R$ ${item.price.toFixed(2)} x ${item.quantity} 
+                              <button onclick="removeItem(${item.id})">Remover</button>`; 
+
+                // Adiciona o item da lista à lista de itens do carrinho no modal
+                cartItemsList.appendChild(listItem); 
+
+                // Atualiza o total do carrinho
+                cartTotal += item.price * item.quantity; 
+            });
+
+            // Atualiza o total do carrinho no elemento com o ID 'cart-total'
+            document.getElementById('cart-total').textContent = cartTotal.toFixed(2); 
+        }
+
+        // Função para remover um item do carrinho
+        function removeItem(productId) {
+            // Obtém o carrinho atual do localStorage ou cria um novo se não existir
+            let cart = JSON.parse(localStorage.getItem('cart')) || []; 
+
+            // Filtra o carrinho para remover o item com o ID correspondente
+            cart = cart.filter(item => item.id !== productId); 
+
+            // Atualiza o carrinho no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart)); 
+
+            // Atualiza o contador do carrinho e o modal do carrinho
+            updateCartCount(); 
+        }
+
+        // Chama a função updateCartCount() quando a página é carregada
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+
+        // Inicializa os modais do Materialize quando a página é carregada
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Cardápio</h1>
+
+        <!-- Link para abrir o modal "Carrinho" -->
+        <a href="#cart-modal" class="btn modal-trigger right">Carrinho (<span id="cart-count">0</span>)</a>
+
+        <div class="row">
+            <% produtos.forEach(produto=> { %>
+                <div class="col s12 m6 l4">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="<%= produto.imagem %>" alt="<%= produto.nome %>">
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title">
+                                <%= produto.nome %>
+                            </span>
+                            <p>R$ <%= parseFloat(produto.preco).toFixed(2) %>
+                            </p>
+                        </div>
+                        <div class="card-action">
+                            <a href="#modal-<%= produto.id %>" class="btn modal-trigger">Detalhes</a>
+                            <!-- Botão para adicionar ao carrinho -->
+                            <button class="btn btn-success"
+                                onclick="addToCart(<%= produto.id %>, '<%= produto.nome %>', <%= produto.preco %>)">
+                                Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para detalhes do produto (sem modificações) -->
+                <div id="modal-<%= produto.id %>" class="modal">
+                    <div class="modal-content">
+                        <h4>
+                            <%= produto.nome %>
+                        </h4>
+                        <img src="<%= produto.imagem %>" alt="<%= produto.nome %>" class="modal-img">
+                        <p>
+                            <%= produto.descricao %>
+                        </p>
+                        <p>R$ <%= parseFloat(produto.preco).toFixed(2) %>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+
+    <!-- Modal "Carrinho" -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <h4>Carrinho</h4>
+            <ul id="cart-items">
+                <!-- Os itens do carrinho serão adicionados aqui dinamicamente -->
+            </ul>
+            <p>Total: R$ <span id="cart-total">0.00</span></p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+            <a href="/checkout" class="btn">Finalizar Compra</a> <!-- Link para a página de checkout -->
+        </div>
+    </div>
+</body>
+
+</html>
