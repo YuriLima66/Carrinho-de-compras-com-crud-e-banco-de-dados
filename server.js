@@ -8,7 +8,7 @@ const bodyParser = require('body-parser'); // Importa o módulo body-parser para
 // Configuração do banco de dados MySQL
 const db = mysql.createConnection({
     host: 'localhost', // Endereço do servidor do banco de dados (geralmente 'localhost' para desenvolvimento local)
-    user: 'yuri', // Nome de usuário do banco de dados
+    user: 'root', // Nome de usuário do banco de dados
     password: '', // Senha do banco de dados
     database: 'cardapio_leilabolos' // Nome do banco de dados a ser usado
 });
